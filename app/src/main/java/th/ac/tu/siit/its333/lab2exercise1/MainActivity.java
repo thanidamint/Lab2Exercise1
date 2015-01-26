@@ -28,6 +28,7 @@ public class MainActivity extends ActionBarActivity {
         tvExpr.setText(expr.toString());
     }
 
+    double result;
     public void recalculate() {
         //Calculate the expression and display the output
 
@@ -36,6 +37,32 @@ public class MainActivity extends ActionBarActivity {
         //reference: http://stackoverflow.com/questions/2206378/how-to-split-a-string-but-also-keep-the-delimiters
         String e = expr.toString();
         String[] tokens = e.split("((?<=\\+)|(?=\\+))|((?<=\\-)|(?=\\-))|((?<=\\*)|(?=\\*))|((?<=/)|(?=/))");
+
+         result = Integer.parseInt(tokens[0]);
+
+        //int i = Integer.parseInt(s);
+
+        for (int x = 0; x < tokens.length && tokens.length % 2 == 1  ; x++)
+        {
+           String s = tokens[x];
+
+            if (x%2==1) // 1,3,5
+           {
+               switch (s) {
+                   case "+": result =  result + Integer.parseInt(tokens[x+1]); break;
+                   case "-": result =  result - Integer.parseInt(tokens[x+1]); break;
+                   case "*": result =  result * Integer.parseInt(tokens[x+1]); break;
+                   case "/": result =  result / Integer.parseInt(tokens[x+1]); break;
+               }
+
+           }
+        }
+
+        TextView tvAns = (TextView)findViewById(R.id.tvAns);
+        tvAns.setText(Double.toString(result));
+
+        //char c = expr.charAt(expr.length()-1);
+        //if(c != '+' || )
     }
 
     public void digitClicked(View v) {
@@ -50,6 +77,11 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void operatorClicked(View v) {
+        String o = ((TextView)v).getText().toString();
+        if(!(expr.charAt(expr.length() - 1) == '+' || expr.charAt(expr.length() - 1) == '-' || expr.charAt(expr.length() - 1) == '*' || expr.charAt(expr.length() - 1) == '/')) {
+            expr.append(o);
+            updateExprDisplay();
+        }
         //IF the last character in expr is not an operator and expr is not "",
         //THEN append the clicked operator and updateExprDisplay,
         //ELSE do nothing
@@ -63,6 +95,8 @@ public class MainActivity extends ActionBarActivity {
         Toast t = Toast.makeText(this.getApplicationContext(),
                 "All cleared", Toast.LENGTH_SHORT);
         t.show();
+        TextView tvAns = (TextView)findViewById(R.id.tvAns);
+        tvAns.setText(" ");
     }
 
     public void BSClicked(View v) {
@@ -70,7 +104,41 @@ public class MainActivity extends ActionBarActivity {
         if (expr.length() > 0) {
             expr.deleteCharAt(expr.length()-1);
             updateExprDisplay();
+            recalculate();
         }
+
+    }
+
+    public void equalClicked(View v) {
+        TextView tvExpr = (TextView)findViewById(R.id.tvExpr);
+        tvExpr.setText(Double.toString(result));
+        TextView tvAns = (TextView)findViewById(R.id.tvAns);
+        tvAns.setText(" ");
+    }
+
+    double memory;
+
+    public void MbuttonClicked(View v) {
+        int id = v.getId();
+
+        switch (id) {
+            case R.id.madd: // Increase botton's id
+                memory = memory + result;
+                break;
+            case R.id.msub: // Decrease button's id
+                memory = memory - result;
+                break;
+            case R.id.mr: // Increase botton's id
+                TextView tvExpr = (TextView)findViewById(R.id.tvExpr);
+                tvExpr.setText(Double.toString(memory));
+                break;
+            case R.id.mc: // Decrease button's id
+                memory = 0;
+                break;
+        }
+
+        //TextView tv = (TextView) findViewById(R.id.tvOutput);
+        //tv.setText(Integer.toString(counter));
     }
 
     @Override
